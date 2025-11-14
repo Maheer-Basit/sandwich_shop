@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sandwich_shop/views/app_styles.dart';
 import 'package:sandwich_shop/repositories/order_repository.dart';
+import 'package:sandwich_shop/repositories/pricing_repository.dart';
 
 enum BreadType { white, wheat, wholemeal }
 
@@ -37,11 +38,13 @@ class _OrderScreenState extends State<OrderScreen> {
   bool _isFootlong = true;
   BreadType _selectedBreadType = BreadType.white;
   bool _isToasted = false;
+  late final PricingRepository _pricingRepository;
 
   @override
   void initState() {
     super.initState();
     _orderRepository = OrderRepository(maxQuantity: widget.maxQuantity);
+    _pricingRepository = PricingRepository();
     _notesController.addListener(() {
       setState(() {});
     });
@@ -103,6 +106,11 @@ class _OrderScreenState extends State<OrderScreen> {
       noteForDisplay = _notesController.text;
     }
 
+    _pricingRepository.calculateTotalPrice(
+      _orderRepository.quantity,
+      _isFootlong,
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sandwich Counter', style: heading1)),
       body: Center(
@@ -116,13 +124,39 @@ class _OrderScreenState extends State<OrderScreen> {
               orderNote: noteForDisplay,
               isToasted: _isToasted,
             ),
+            const SizedBox(height: 12),
+            Text(
+              'Total: \$${_pricingRepository.totalPrice.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text('six-inch', style: normalText),
-                Switch(key: const Key('size_toggle_switch'), value: _isFootlong, onChanged: _onSandwichTypeChanged),
+                Switch(
+                  key: const Key('size_toggle_switch'),
+                  value: _isFootlong,
+                  onChanged: _onSandwichTypeChanged,
+                ),
                 const Text('footlong', style: normalText),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('untoasted', style: normalText),
+                Switch(
+                  value: _isToasted,
+                  onChanged: (value) {
+                    setState(() => _isToasted = value);
+                  },
+                ),
+                const Text('toasted', style: normalText),
               ],
             ),
             const SizedBox(height: 10),
@@ -159,19 +193,6 @@ class _OrderScreenState extends State<OrderScreen> {
                   icon: Icons.remove,
                   label: 'Remove',
                   backgroundColor: Colors.red,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('untoasted', style: normalText),
-                    Switch(
-                      value: _isToasted,
-                      onChanged: (value) {
-                        setState(() => _isToasted = value);
-                      },
-                    ),
-                    const Text('toasted', style: normalText),
-                  ],
                 ),
               ],
             ),
