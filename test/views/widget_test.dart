@@ -196,4 +196,18 @@ void main() {
       expect(find.textContaining('footlong sandwich'), findsOneWidget);
     });
   });
+  group('OrderScreen - Toast Toggle', () {
+    testWidgets('toggles between toasted and untoasted', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const App());
+      expect(find.textContaining('footlong sandwich'), findsOneWidget);
+      await tester.tap(find.byType(Switch).at(1));
+      await tester.pump();
+      expect(find.textContaining('footlong sandwich'), findsOneWidget);
+      await tester.tap(find.byType(Switch).at(1));
+      await tester.pump();
+      expect(find.textContaining('footlong sandwich'), findsOneWidget);
+    });
+  });
 }
