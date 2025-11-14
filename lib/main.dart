@@ -36,6 +36,7 @@ class _OrderScreenState extends State<OrderScreen> {
   final TextEditingController _notesController = TextEditingController();
   bool _isFootlong = true;
   BreadType _selectedBreadType = BreadType.white;
+  bool _isToasted = false;
 
   @override
   void initState() {
@@ -103,12 +104,7 @@ class _OrderScreenState extends State<OrderScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Sandwich Counter',
-          style: heading1,
-        ),
-      ),
+      appBar: AppBar(title: const Text('Sandwich Counter', style: heading1)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -118,16 +114,14 @@ class _OrderScreenState extends State<OrderScreen> {
               itemType: sandwichType,
               breadType: _selectedBreadType,
               orderNote: noteForDisplay,
+              isToasted: _isToasted,
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text('six-inch', style: normalText),
-                Switch(
-                  value: _isFootlong,
-                  onChanged: _onSandwichTypeChanged,
-                ),
+                Switch(key: const Key('size_toggle_switch'), value: _isFootlong, onChanged: _onSandwichTypeChanged),
                 const Text('footlong', style: normalText),
               ],
             ),
@@ -166,6 +160,19 @@ class _OrderScreenState extends State<OrderScreen> {
                   label: 'Remove',
                   backgroundColor: Colors.red,
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('untoasted', style: normalText),
+                    Switch(
+                      value: _isToasted,
+                      onChanged: (value) {
+                        setState(() => _isToasted = value);
+                      },
+                    ),
+                    const Text('toasted', style: normalText),
+                  ],
+                ),
               ],
             ),
           ],
@@ -200,13 +207,7 @@ class StyledButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: myButtonStyle,
-      child: Row(
-        children: [
-          Icon(icon),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
-      ),
+      child: Row(children: [Icon(icon), const SizedBox(width: 8), Text(label)]),
     );
   }
 }
@@ -216,6 +217,7 @@ class OrderItemDisplay extends StatelessWidget {
   final String itemType;
   final BreadType breadType;
   final String orderNote;
+  final bool isToasted;
 
   const OrderItemDisplay({
     super.key,
@@ -223,6 +225,7 @@ class OrderItemDisplay extends StatelessWidget {
     required this.itemType,
     required this.breadType,
     required this.orderNote,
+    required this.isToasted,
   });
 
   @override
@@ -232,15 +235,9 @@ class OrderItemDisplay extends StatelessWidget {
 
     return Column(
       children: [
-        Text(
-          displayText,
-          style: normalText,
-        ),
+        Text(displayText, style: normalText),
         const SizedBox(height: 8),
-        Text(
-          'Note: $orderNote',
-          style: normalText,
-        ),
+        Text('Note: $orderNote', style: normalText),
       ],
     );
   }
