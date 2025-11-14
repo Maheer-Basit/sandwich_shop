@@ -183,22 +183,17 @@ void main() {
   });
 
   group('OrderScreen - Size Toggle', () {
-    
-    testWidgets(
-      'toggles between footlong and six-inch', 
-      (WidgetTester tester) async {
-        await tester.pumpWidget(const App());
-        expect(
-          find.textContaining('footlong sandwich'),
-          findsOneWidget,
-        ); 
-        await tester.tap(find.byKey(  const Key('size_toggle_switch')));
-        await tester.pump(); 
-        expect(find.textContaining('six-inch sandwich'), findsOneWidget);
-        await tester.tap(find.byKey(const Key('size_toggle_switch')));
-        await tester.pump();
-        expect(find.textContaining('footlong sandwich'), findsOneWidget);
-      },
-    );
+    testWidgets('toggles between footlong and six-inch', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const App());
+      expect(find.textContaining('footlong sandwich'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('size_toggle_switch')));
+      await tester.pump();
+      expect(find.textContaining('six-inch sandwich'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('size_toggle_switch')));
+      await tester.pump();
+      expect(find.textContaining('footlong sandwich'), findsOneWidget);
+    });
   });
 }
